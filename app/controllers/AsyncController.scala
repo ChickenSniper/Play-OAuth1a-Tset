@@ -51,6 +51,7 @@ class AsyncController @Inject() (actorSystem: ActorSystem, ws: WSClient)(implici
       play.api.Logger.info("secret ----->" + tokenPair.secret)
       oauth.retrieveAccessToken(tokenPair, verifier) match {
         case Right(t) => ws.url("https://api.twitter.com/1.1/search/tweets.json?q=%40twitterapi")
+                        .sign(OAuthCalculator(consumerKey, tokenPair))
                         .get.map{ resp =>
                           play.api.Logger.info("API resp====>" + resp.body)
                           Redirect("/").withSession("token" -> t.token, "secret" -> t.secret)
@@ -77,6 +78,7 @@ class AsyncController @Inject() (actorSystem: ActorSystem, ws: WSClient)(implici
       play.api.Logger.info("secret ----->" + tokenPair.secret)
       oauth.retrieveAccessToken(tokenPair, verifier) match {
         case Right(t) => ws.url("https://appcenter.intuit.com/api/v1/connection/reconnect")
+                        .sign(OAuthCalculator(consumerKey, tokenPair))
                         .get.map{ resp =>
                           play.api.Logger.info("API resp====>" + resp.body)
                           Redirect("/").withSession("token" -> t.token, "secret" -> t.secret)
